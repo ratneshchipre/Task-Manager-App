@@ -1,21 +1,26 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const { connectMongoDb } = require("./connection");
+require("dotenv").config();
 
-const taskRouter = require("./routes/task");
+const userRouter = require("./routes/user.routes");
+const taskRouter = require("./routes/task.routes");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
-connectMongoDb("mongodb://127.0.0.1:27017/task-manager-app")
+connectMongoDb(process.env.MONGO_URI)
   .then(() => console.log("MongoDb connected!"))
   .catch(() => console.log(err));
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 
-// Route
-app.use("/lists", taskRouter);
+// Routes
+app.use("/api/user", userRouter);
+app.use("/api/tasks", taskRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running successfully on PORT ${PORT}`);

@@ -1,6 +1,6 @@
-const Task = require("../models/task");
+const Task = require("../models/task.model");
 
-const getAllLists = async (req, res) => {
+const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find({});
     return res.status(200).json({ tasks });
@@ -9,17 +9,17 @@ const getAllLists = async (req, res) => {
   }
 };
 
-const createList = async (req, res) => {
+const createTask = async (req, res) => {
   const body = req.body;
   try {
-    const createdTask = await Task.create(body);
+    const createdTask = await Task.create({ body, createdBy: req.user._id });
     return res.status(200).json({ createdTask });
   } catch (error) {
     return res.status(500).json({ msg: error });
   }
 };
 
-const getList = async (req, res) => {
+const getTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
     const task = await Task.findOne({ _id: taskID });
@@ -35,7 +35,7 @@ const getList = async (req, res) => {
   }
 };
 
-const updateList = async (req, res) => {
+const updateTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
     const body = req.body;
@@ -55,7 +55,7 @@ const updateList = async (req, res) => {
   }
 };
 
-const deleteList = async (req, res) => {
+const deleteTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
     const task = await Task.findOneAndDelete({ _id: taskID });
@@ -72,9 +72,9 @@ const deleteList = async (req, res) => {
 };
 
 module.exports = {
-  getAllLists,
-  createList,
-  getList,
-  updateList,
-  deleteList,
+  getAllTasks,
+  createTask,
+  getTask,
+  updateTask,
+  deleteTask,
 };
