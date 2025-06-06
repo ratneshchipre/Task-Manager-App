@@ -14,7 +14,11 @@ interface TaskProps {
 const Task = ({ task, onDelete }: TaskProps) => {
   return (
     <div
-      className={`bg-white rounded shadow p-4 select-none transition border-[1px] border-gray-100 group relative`}
+      className={`bg-white rounded shadow p-4 select-none transition border-[1px] group relative ${
+        task.status === true
+          ? "line-through border-green-500 bg-green-50 text-gray-600"
+          : "border-gray-100"
+      }`}
     >
       {task.title}
       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
