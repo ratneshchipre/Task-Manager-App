@@ -1,18 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const CreateTask = () => {
   const navigate = useNavigate();
+  const [task, setTask] = useState<string>("");
 
-  const handleTaskCreation = () => {
-    navigate("/");
-  };
-
-  const createTask = async () => {
+  const handleTaskFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      await axios.post("/api/tasks");
+      const response = await axios.post("/api/tasks", { title: task });
+      console.log(response);
+      if (response.data.success === true) {
+        navigate("/");
+        toast.success("Task created");
+      } else {
+        toast.error("Failed to create task");
+      }
     } catch (err) {
-      console.error("Error fetching tasks:", err);
+      console.error("Error creating task:", err);
     }
   };
 
@@ -20,27 +27,30 @@ const CreateTask = () => {
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-100">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         <h3 className="text-lg font-semibold mb-4">Add New Task</h3>
-        <input
-          type="text"
-          name="title"
-          onChange={(e) => e.target.value}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          placeholder="Enter task name"
-        />
-        <div className="flex justify-end gap-2">
-          <button
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded cursor-pointer"
-            onClick={() => navigate(-1)}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 bg-[#72A1E5] hover:bg-[#507FC3] text-white rounded cursor-pointer"
-            onClick={handleTaskCreation}
-          >
-            Add
-          </button>
-        </div>
+        <form onSubmit={handleTaskFormSubmit}>
+          <input
+            type="text"
+            name="title"
+            onChange={(e) => setTask(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded mb-4"
+            placeholder="Enter task name"
+            required
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded cursor-pointer"
+              onClick={() => navigate(-1)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-[#72A1E5] hover:bg-[#507FC3] text-white rounded cursor-pointer"
+            >
+              Add
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

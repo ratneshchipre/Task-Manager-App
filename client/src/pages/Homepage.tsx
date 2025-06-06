@@ -2,8 +2,9 @@ import { useNavigate } from "react-router-dom";
 import Task from "../components/Task";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-type tasks = {
+type taskProps = {
   _id: string;
   title: string;
   status?: boolean;
@@ -11,7 +12,8 @@ type tasks = {
 
 const Homepage = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<tasks[]>([]);
+  const [tasks, setTasks] = useState<taskProps[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -26,7 +28,22 @@ const Homepage = () => {
     };
 
     fetchTasks();
-  }, []);
+  }, [refreshTrigger]);
+
+  const handleTaskDelete = async (taskId: string) => {
+    try {
+      const response = await axios.delete(`/api/tasks/${taskId}`);
+      console.log(response);
+      if (response.data.success === true) {
+        toast.success("Task deleted");
+        setRefreshTrigger((prev) => prev + 1);
+      } else {
+        toast.error("Failed to delete task");
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
 
   return (
     <div className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-[28rem] h-[30rem] overflow-hidden">
@@ -37,7 +54,13 @@ const Homepage = () => {
         <div className="flex flex-col h-[400px] px-1.5 py-1 pb-6 overflow-auto">
           <div className="flex flex-col gap-4">
             {tasks && tasks.length > 0 ? (
-              tasks.map((task) => <Task key={task._id} task={task} />)
+              tasks.map((task) => (
+                <Task
+                  key={task._id}
+                  task={task}
+                  onDelete={() => handleTaskDelete(task._id)}
+                />
+              ))
             ) : (
               <div>No tasks available</div>
             )}

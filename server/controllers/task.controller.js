@@ -3,71 +3,154 @@ const Task = require("../models/task.model");
 const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find({});
-    return res.status(200).json({ tasks });
+
+    if (!tasks) {
+      return res.status(400).json({
+        success: false,
+        message: "No tasks found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      tasks,
+    });
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    console.error("Error occured:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error fetching the tasks.",
+    });
   }
 };
 
 const createTask = async (req, res) => {
-  const body = req.body;
+  const { title } = req.body;
+
+  if (!title) {
+    return res.status(400).json({
+      success: false,
+      message: "Title is required",
+    });
+  }
+
   try {
-    const createdTask = await Task.create({ body, createdBy: req.user._id });
-    return res.status(200).json({ createdTask });
+    const createdTask = await Task.create({ title });
+
+    if (!createdTask) {
+      return res.status(401).json({
+        success: false,
+        message: "Failed to create task.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      createdTask,
+    });
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    console.error("Error occured:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error during task creation.",
+    });
   }
 };
 
 const getTask = async (req, res) => {
+  const { id: taskID } = req.params;
+
   try {
-    const { id: taskID } = req.params;
     const task = await Task.findOne({ _id: taskID });
 
     if (!task)
-      return res
-        .status(404)
-        .json({ msg: `No task with ID: ${taskID} was found` });
+      return res.status(404).json({
+        success: false,
+        message: `No task with ID: ${taskID} was found`,
+      });
 
-    return res.status(200).json({ task });
+    return res.status(200).json({
+      success: true,
+      task,
+    });
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    console.error("Error occured:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error getting the task.",
+    });
   }
 };
 
 const updateTask = async (req, res) => {
+  const { id: taskID } = req.params;
+  const { title, status } = req.body;
+
   try {
-    const { id: taskID } = req.params;
-    const body = req.body;
-    const task = await Task.findByIdAndUpdate({ _id: taskID }, body, {
-      new: true,
-      runValidators: true,
+    const task = await Task.findByIdAndUpdate(
+      { _id: taskID },
+      { title, status },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!taskID)
+      return res.status(404).json({
+        success: false,
+        message: `No task with ID: ${taskID} was found`,
+      });
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: `Failed to update task`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      task,
     });
-
-    if (!task)
-      return res
-        .status(404)
-        .json({ msg: `No task with ID: ${taskID} was found` });
-
-    return res.status(200).json({ task });
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    console.error("Error occured:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error during task updation",
+    });
   }
 };
 
 const deleteTask = async (req, res) => {
+  const { id: taskID } = req.params;
+
   try {
-    const { id: taskID } = req.params;
     const task = await Task.findOneAndDelete({ _id: taskID });
 
-    if (!task)
-      return res
-        .status(404)
-        .json({ msg: `No task with ID: ${taskID} was found` });
+    if (!taskID)
+      return res.status(404).json({
+        success: false,
+        message: `No task with ID: ${taskID} was found`,
+      });
 
-    return res.status(200).json({ task });
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: `Failed to delete task`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      task,
+    });
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    console.error("Error occured:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error during deleting task.",
+    });
   }
 };
 
