@@ -2,11 +2,12 @@ const Task = require("../models/task.model");
 
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({});
+    const tasks = await Task.find({ user: req.user._id });
 
     if (!tasks) {
-      return res.status(400).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
+        tasks: [],
         message: "No tasks found",
       });
     }
@@ -35,7 +36,10 @@ const createTask = async (req, res) => {
   }
 
   try {
-    const createdTask = await Task.create({ title });
+    const createdTask = await Task.create({
+      title,
+      user: req.user._id,
+    });
 
     if (!createdTask) {
       return res.status(401).json({
@@ -61,7 +65,10 @@ const getTask = async (req, res) => {
   const { id: taskID } = req.params;
 
   try {
-    const task = await Task.findOne({ _id: taskID });
+    const task = await Task.findOne({
+      _id: taskID,
+      user: req.user._id,
+    });
 
     if (!task)
       return res.status(404).json({
@@ -88,7 +95,7 @@ const updateTask = async (req, res) => {
 
   try {
     const task = await Task.findByIdAndUpdate(
-      { _id: taskID },
+      { _id: taskID, user: req.user._id },
       { title, status },
       {
         new: true,
@@ -126,7 +133,10 @@ const deleteTask = async (req, res) => {
   const { id: taskID } = req.params;
 
   try {
-    const task = await Task.findOneAndDelete({ _id: taskID });
+    const task = await Task.findOneAndDelete({
+      _id: taskID,
+      user: req.user._id,
+    });
 
     if (!taskID)
       return res.status(404).json({

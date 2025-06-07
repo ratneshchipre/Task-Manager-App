@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Task from "../components/Task";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 type taskProps = {
@@ -21,8 +21,15 @@ const Homepage = () => {
         const response = await axios.get("/api/tasks");
         console.log(response.data.tasks);
         setTasks(Array.isArray(response.data.tasks) ? response.data.tasks : []);
-      } catch (err) {
-        console.error("Error fetching tasks:", err);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        if (error instanceof AxiosError && error.response?.data?.message) {
+          if (
+            error.response.data.message.startsWith("Authentication required")
+          ) {
+            toast.error(error.response.data.message);
+          }
+        }
         setTasks([]);
       }
     };
@@ -42,6 +49,9 @@ const Homepage = () => {
       }
     } catch (error) {
       console.error("Error deleting task:", error);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Failed to delete task");
+      }
     }
   };
 
