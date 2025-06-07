@@ -11,7 +11,7 @@ const PORT = process.env.PORT;
 
 connectMongoDb(process.env.MONGO_URI)
   .then(() => console.log("MongoDb connected!"))
-  .catch(() => console.log(err));
+  .catch((err) => console.log(err));
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
