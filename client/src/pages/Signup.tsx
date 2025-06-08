@@ -16,7 +16,6 @@ const Signup = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -52,7 +51,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-[28rem] p-8">
+    <div className="bg-[#FFFFFF] rounded-xl shadow-lg sm:min-w-[28rem] p-8">
       <h2 className="text-[#72A1E5] font-bold text-[1.4rem] mb-6 tracking-wide">
         Create Account
       </h2>
@@ -93,8 +92,6 @@ const Signup = () => {
             required
           />
         </div>
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
           type="submit"

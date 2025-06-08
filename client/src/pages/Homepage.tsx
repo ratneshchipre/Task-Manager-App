@@ -56,7 +56,7 @@ const Homepage = () => {
   };
 
   return (
-    <div className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-[28rem] h-[30rem] overflow-hidden">
+    <div className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-[95%] sm:min-w-[28rem] h-[30rem] overflow-hidden">
       <div className="p-8 relative">
         <h2 className="text-[#72A1E5] font-bold text-[1.4rem] mb-6 tracking-wide">
           Task Manager

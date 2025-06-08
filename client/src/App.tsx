@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 const App = () => {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex items-center justify-center bg-[#2A2D34]">
+      <div className="min-h-screen flex items-center justify-center bg-[#2A2D34] px-7">
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/create-task" element={<CreateTask />} />
