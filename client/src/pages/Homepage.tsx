@@ -19,7 +19,6 @@ const Homepage = () => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get("/api/tasks");
-        console.log(response.data.tasks);
         setTasks(Array.isArray(response.data.tasks) ? response.data.tasks : []);
       } catch (error) {
         console.error("Error fetching tasks:", error);
